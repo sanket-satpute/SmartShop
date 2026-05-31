@@ -86,6 +86,13 @@ public class ProductController {
     }
 
     @ApiResponse(responseCode = "201", description = "Product Ordered Successfully")
+    @Operation(summary = "Add product into Cart", description = "Add the product into cart but don't reduce the stock.")
+    @PostMapping("/cart/{id}")
+    public ResponseEntity<?> addIntoCart(@PathVariable String id, @RequestParam int howMuch) {
+        return ResponseEntity.ok(service.addToCart(id, howMuch));
+    }
+
+    @ApiResponse(responseCode = "201", description = "Product Ordered Successfully")
     @Operation(summary = "Update Product stock", description = "Update the product stock.")
     @PostMapping("/updateStock/{id}")
     public ResponseEntity<?> updateProductStock(@PathVariable String id, @RequestParam int howMuch) {

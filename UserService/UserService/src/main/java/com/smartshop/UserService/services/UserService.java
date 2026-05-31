@@ -17,4 +17,6 @@ public interface UserService {
     UserResponseDTO updateUser(String id, User user);
 
     void deleteUser(String id);
+
+    boolean isUserExistWithThisId(String id);
 }

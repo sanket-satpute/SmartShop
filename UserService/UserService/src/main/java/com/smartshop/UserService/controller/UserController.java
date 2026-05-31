@@ -36,4 +36,11 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable String id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
+
+    @PostMapping("/exist/{id}")
+    public ResponseEntity<Boolean> isUserExistWithThisId(@PathVariable String id) {
+        boolean exists = userService.isUserExistWithThisId(id);
+        logger.info("Checked existence of user with ID: {}, exists: {}", id, exists);
+        return ResponseEntity.ok(exists);
+    }
 }

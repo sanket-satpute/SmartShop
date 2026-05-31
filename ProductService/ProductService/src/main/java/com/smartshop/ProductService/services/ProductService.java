@@ -26,4 +26,6 @@ public interface ProductService {
     public ProductResponseDTO updateStock(String id, int stock);
 
     public ProductResponseDTO updateProduct(String id, ProductCreateDTO productCreateDTO);
+
+    public ProductOrderResponseDTO addToCart(String id, int howMuch);
 }

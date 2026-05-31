@@ -75,4 +75,9 @@ public class UserServiceImpl implements UserService {
         User existingUser = repository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         repository.delete(existingUser);
     }
+
+    @Override
+    public boolean isUserExistWithThisId(String id) {
+        return repository.existsById(id);
+    }
 }

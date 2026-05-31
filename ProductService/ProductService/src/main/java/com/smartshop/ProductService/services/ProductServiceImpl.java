@@ -97,6 +97,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductOrderResponseDTO orderProduct(String id, int howMuch) {
         ProductResponseDTO product = this.getProductById(id);
+        if(howMuch < 1)
+            throw new IllegalArgumentException("You must order at least one product.");
         if (product.getStock() < 1)
             throw new ProductOutOfStockException("Product with id:" + id + " is out of stock!");
         if(product.getStock()-howMuch < 0)
@@ -137,6 +139,23 @@ public class ProductServiceImpl implements ProductService {
                 .description(result.getDescription())
                 .price(result.getPrice())
                 .stock(result.getStock())
+                .build();
+    }
+
+    @Override
+    public ProductOrderResponseDTO addToCart(String id, int howMuch) {
+        ProductResponseDTO product = this.getProductById(id);
+        if(howMuch < 1)
+            throw new IllegalArgumentException("You must order at least one product.");
+        if (product.getStock() < 1)
+            throw new ProductOutOfStockException("Product with id:" + id + " is out of stock!");
+        if(product.getStock()-howMuch < 0)
+            throw new ProductOutOfStockException("Product is less max you can order is " + product.getStock());
+        ProductResponseDTO response = this.getProductById(id);
+        return ProductOrderResponseDTO.builder()
+                .id(response.getId())
+                .name(response.getName())
+                .price(response.getPrice())
                 .build();
     }
 }
