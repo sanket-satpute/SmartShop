@@ -1,0 +1,18 @@
+package com.SmartShop.NotificationService.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Builder
+public class Notification {
+    private String id;
+    private String userId;
+    private String message;
+    private boolean read;
+
+}
