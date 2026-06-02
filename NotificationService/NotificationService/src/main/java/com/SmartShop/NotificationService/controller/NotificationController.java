@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notifications")
 public class NotificationController {
 
-    @Autowired
-    NotificationService service;
-
-
-    @PostMapping
-    public ResponseEntity<?> sendNotification(@RequestBody Notification notification) {
-        // Logic to send notification
-        service.sendNotification(notification);
-        return ResponseEntity.ok("Notification sent successfully");
-    }
+//    @Autowired
+//    NotificationService service;
+//
+//
+//    @PostMapping
+//    public ResponseEntity<?> sendNotification(@RequestBody Notification notification) {
+//        // Logic to send notification
+//        service.sendNotification(notification);
+//        return ResponseEntity.ok("Notification sent successfully");
+//    }
 
 }

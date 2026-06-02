@@ -2,6 +2,7 @@ package com.smartshop.UserService.controller;
 
 import com.smartshop.UserService.api_response.dto.UserCreateDTO;
 import com.smartshop.UserService.api_response.dto.UserResponseDTO;
+import com.smartshop.UserService.api_response.dto.UserResponseMailDTO;
 import com.smartshop.UserService.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,5 +43,12 @@ public class UserController {
         boolean exists = userService.isUserExistWithThisId(id);
         logger.info("Checked existence of user with ID: {}, exists: {}", id, exists);
         return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/mail/{id}")
+    public ResponseEntity<UserResponseMailDTO> getUserMailAndNameById(@PathVariable String id) {
+        UserResponseMailDTO user = userService.getUserMailById(id);
+        logger.info("Retrieved email for user ID: {}, email: {}", id, user.getEmail());
+        return ResponseEntity.ok(user);
     }
 }

@@ -3,6 +3,17 @@ server:
 
 spring:
   application:
-    name: NotificationService
+    name: NOTIFICATION-SERVICE
 
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: smart.shop.delhivery.mail@gmail.com
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

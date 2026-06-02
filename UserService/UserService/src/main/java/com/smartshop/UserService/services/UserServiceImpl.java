@@ -2,6 +2,7 @@ package com.smartshop.UserService.services;
 
 import com.smartshop.UserService.api_response.dto.UserCreateDTO;
 import com.smartshop.UserService.api_response.dto.UserResponseDTO;
+import com.smartshop.UserService.api_response.dto.UserResponseMailDTO;
 import com.smartshop.UserService.entity.User;
 import com.smartshop.UserService.exceptions.UserNotFoundException;
 import com.smartshop.UserService.repository.UserRepository;
@@ -79,5 +80,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isUserExistWithThisId(String id) {
         return repository.existsById(id);
+    }
+
+    @Override
+    public UserResponseMailDTO getUserMailById(String id) {
+        User user = repository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+        return UserResponseMailDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
     }
 }

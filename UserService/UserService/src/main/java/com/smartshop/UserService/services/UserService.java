@@ -2,6 +2,7 @@ package com.smartshop.UserService.services;
 
 import com.smartshop.UserService.api_response.dto.UserCreateDTO;
 import com.smartshop.UserService.api_response.dto.UserResponseDTO;
+import com.smartshop.UserService.api_response.dto.UserResponseMailDTO;
 import com.smartshop.UserService.entity.User;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface UserService {
     void deleteUser(String id);
 
     boolean isUserExistWithThisId(String id);
+
+    UserResponseMailDTO getUserMailById(String id);
 }

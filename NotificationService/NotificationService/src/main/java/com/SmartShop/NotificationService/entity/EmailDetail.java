@@ -5,17 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class Notification {
-    private String userId;
-    private String message;
-    private String recipientEmail;
+public class EmailDetail {
+    private String recipient;
+    private String msgBody;
     private String subject;
-    private LocalDateTime timestamp;
-
+    private String attachment;
 }

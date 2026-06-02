@@ -1,56 +1,73 @@
 package com.SmartShop.NotificationService.configuration;
 
 import com.SmartShop.NotificationService.entity.Notification;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.*;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Kafka Producer Configuration
+ * Kafka Consumer Configuration
  *
  * CONCEPT:
- * - ProducerFactory: factory that creates Kafka producer instances
- * - KafkaTemplate: Spring helper that wraps the producer and provides
- *   easy methods like .send(topic, object)
- * - JsonSerializer: converts Java object → JSON bytes to store in Kafka
+ * - ConsumerFactory: factory that creates Kafka consumer instances
+ * - ConcurrentKafkaListenerContainerFactory: Spring wrapper that manages
+ *   the lifecycle of @KafkaListener methods
+ * - JsonDeserializer: converts raw JSON bytes from Kafka into our Java object
  */
+@EnableKafka
 @Configuration
 public class NotificationConfiguration {
 
     /**
-     * ProducerFactory defines HOW to connect to Kafka and HOW to serialize messages.
+     * ConsumerFactory defines HOW to connect to Kafka and HOW to deserialize messages.
      *
      * Key settings:
      * - BOOTSTRAP_SERVERS_CONFIG: where Kafka broker is running
-     * - JsonSerializer.ADD_TYPE_INFO_HEADERS → false:
-     *     Do NOT add __TypeId__ header to messages.
-     *     This prevents the cross-service class name mismatch problem.
+     * - GROUP_ID_CONFIG: consumer group name (all consumers in same group share load)
+     * - AUTO_OFFSET_RESET_CONFIG: "earliest" = read from beginning if no offset saved
+     * - JsonDeserializer(Notification.class, false):
+     *     - first param: what Java class to deserialize into
+     *     - second param (false): IGNORE __TypeId__ headers from producer
+     *       This is what fixes the cross-service package mismatch issue!
      */
     @Bean
-    public ProducerFactory<String, Notification> producerFactory() {
-        Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        // Do NOT add type headers — consumer is in different service with different package
-        configProps.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
-        return new DefaultKafkaProducerFactory<>(configProps);
+    public ConsumerFactory<String, Notification> consumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "notification-group");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        // false = do NOT use type headers, always deserialize as Notification.class
+        JsonDeserializer<Notification> deserializer = new JsonDeserializer<>(Notification.class, false);
+        deserializer.addTrustedPackages("*");
+
+        return new DefaultKafkaConsumerFactory<>(
+                props,
+                new StringDeserializer(),
+                deserializer
+        );
     }
 
     /**
-     * KafkaTemplate is what you @Autowire in NotificationService.
-     * It wraps the producer and gives you .send(topic, value) method.
+     * This factory is used by @KafkaListener.
+     * Spring uses this bean automatically when it sees @KafkaListener in your code.
      */
     @Bean
-    public KafkaTemplate<String, Notification> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, Notification> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Notification> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
     }
 }
